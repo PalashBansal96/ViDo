@@ -12,7 +12,7 @@ import base64
 import speech_recognition as sr
 from pydub import AudioSegment
 import os
-
+from pygame import mixer
 
 app = Flask(__name__)
 
@@ -34,8 +34,6 @@ def process_request(sid, url):
 				with open(sid + '.mp3', 'w') as f:
 					f.write(r.content)
 					print f.name
-				sound = AudioSegment.from_mp3(sid+".mp3")
-				sound.export(sid+".wav","wav")
 				# os.remove(sid+".mp3")
 				break
 			else:
@@ -52,9 +50,11 @@ def process_request(sid, url):
 	# 	print("You said " + in_hindi)    # recognize speech using Google Speech Recognition
 	# except LookupError:                            # speech is unintelligible
 	# 	print("Could not understand audio")
-	
-	with sr.WavFile("/home/krngrvr09/Desktop/inout/pradhan.wav") as source:
-		audio = r.record(source)                   # listen for the first phrase and extract it into audio data
+	mixer.init()
+	mixer.music.load("/home/krngrvr09/Desktop/inout/"+str(sid)+".mp3")
+	mixer.music.play()
+	with sr.Microphone() as source:
+		audio = r.listen(source)                   # listen for the first phrase and extract it into audio data
 	t = datetime.now()
 	try:
 		in_hindi = r.recognize_google(audio)
